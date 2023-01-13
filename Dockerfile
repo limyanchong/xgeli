@@ -7,7 +7,7 @@ RUN apk add --no-cache dropbear && \
     echo "xgeli0:xgeli0" | chpasswd
 
 USER xgeli0
-RUN echo "The password is {boJ9jbbUNNfktd78OOpsqOltutMc3MY1}." > ~/readme
+RUN echo "The password is {boJ9jbbUNNfktd78OOpsqOltutMc3MY1}." > ~/README
 
 USER root
 ENTRYPOINT ["dropbear", "-F"]
