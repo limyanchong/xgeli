@@ -1,8 +1,9 @@
 FROM alpine:3.17.0
 
-RUN apk add --no-cache dropbear && \
+RUN apk add --no-cache dropbear openssh && \
     mkdir /etc/dropbear && \
     dropbearkey -t rsa -f /etc/dropbear/dropbear_rsa_host_key && \
+    ssh-keygen -A && \
     adduser --shell /bin/sh --disabled-password xgeli0 && \
     echo "xgeli0:xgeli0" | chpasswd
 
