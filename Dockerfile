@@ -2,7 +2,6 @@ FROM alpine:3.17.0 AS server
 
 RUN apk add --no-cache dropbear
 RUN mkdir /etc/dropbear
-RUN dropbearkey -t rsa -f /etc/dropbear/dropbear_rsa_host_key
 RUN adduser --shell /bin/sh --disabled-password xgeli0
 RUN echo "xgeli0:xgeli0" | chpasswd
 RUN adduser --shell /bin/sh --disabled-password xgeli1
@@ -22,7 +21,7 @@ RUN echo "The password is {UmHadQclWmgdLOKQ3YNgjWxGoRMb5luK}." > ~/-
 FROM scratch
 COPY --from=server / /
 
-ENTRYPOINT ["dropbear", "-F"]
+ENTRYPOINT ["dropbear", "-RF"]
 CMD ["-p", "2220"]
 
 EXPOSE 2220
