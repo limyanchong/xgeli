@@ -1,13 +1,11 @@
-FROM alpine:3.17.0 AS server
+FROM alpine:3.17.2 AS server
+
+COPY users.txt .
 
 RUN apk add --no-cache dropbear
 RUN mkdir /etc/dropbear
-RUN adduser --shell /bin/sh --disabled-password xgeli0
-RUN echo "xgeli0:xgeli0" | chpasswd
-RUN adduser --shell /bin/sh --disabled-password xgeli1
-RUN echo "xgeli1:boJ9jbbUNNfktd78OOpsqOltutMc3MY1" | chpasswd
-RUN adduser --shell /bin/sh --disabled-password xgeli2
-RUN echo "xgeli2:CV1DtqXWVFXTvM2F0k09SHz0YwRINYA9" | chpasswd
+RUN awk -F ':' '{print $1}' users.txt | while IFS= read -r user || [ "$user" ]; do adduser -h /home/"$user" -s /bin/sh -D "$user"; done
+RUN cat users.txt | chpasswd
 
 USER xgeli0
 RUN echo "The password is {boJ9jbbUNNfktd78OOpsqOltutMc3MY1}." > ~/README
