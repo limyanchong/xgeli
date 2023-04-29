@@ -1,0 +1,57 @@
+#!/bin/sh
+
+# Script description and command help
+USAGE="Usage: $(basename "$0") FILE
+
+Create users in batch from FILE.
+Each row of FILE should contain a user data in format '<username>:<password>'."
+
+set -e
+
+# Display command help
+if [ $# -eq 0 ]; then
+  echo "${USAGE}"
+  exit 1;
+fi
+
+# Option parsing
+while getopts ":" option; do
+  case "${option}" in
+    "?")
+      echo "$(basename "$0"): invalid option: ${OPTARG}"
+      exit 0;
+      ;;
+  esac
+done
+
+shift $((OPTIND - 1))
+
+# Operand parsing
+FILE=$1
+
+if [ ! -f "${FILE}" ]; then
+  echo "$(basename "$0"): ${FILE}: no such file"
+  exit 1;
+fi
+
+# Script logic
+while IFS=: read -r username password || [ "${username}" ]; do
+  # Create user with adduser if useradd is not available
+  # Assume either useradd or adduser is always available
+  if command -v useradd > /dev/null 2>&1; then
+    useradd --shell /bin/sh "${username}"
+  else
+    adduser --shell /bin/sh --disabled-password --gecos "" "${username}"
+  fi
+
+  # Set password with passwd if passwd command is available
+  command -v passwd > /dev/null 2>&1 \
+    && printf '%s\n%s' "${password}" "${password}" \
+    | passwd "${username}" > /dev/null
+# Read the first argument as the path to user list
+done < "${FILE}"
+
+# Set password with chpasswd if passwd command is not available
+# Assume either passwd or chpasswd is always available
+command -v passwd > /dev/null 2>&1 \
+  || chpasswd < "$1" > /dev/null

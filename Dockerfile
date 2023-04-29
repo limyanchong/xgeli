@@ -1,11 +1,11 @@
 FROM alpine:3.17.2 AS server
 
-COPY users.txt .
+COPY users.txt createuser .
 
 RUN apk add --no-cache dropbear
 RUN mkdir /etc/dropbear
-RUN awk -F ':' '{print $1}' users.txt | while IFS= read -r user || [ "$user" ]; do adduser -h /home/"$user" -s /bin/sh -D "$user"; done
-RUN cat users.txt | chpasswd
+RUN ./createuser users.txt
+RUN rm users.txt createuser
 
 USER xgeli0
 RUN echo "The password is {boJ9jbbUNNfktd78OOpsqOltutMc3MY1}." > ~/README
